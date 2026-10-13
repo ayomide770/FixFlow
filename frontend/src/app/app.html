@@ -1,0 +1,35 @@
+<header class="app-header">
+  <div class="header-content">
+    <a class="brand" routerLink="/maintenance-requests">
+      <span class="brand-mark">F</span>
+      <span>FixFlow</span>
+    </a>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a
+        routerLink="/properties"
+        routerLinkActive="active"
+      >
+        Properties
+      </a>
+
+      <a
+        routerLink="/maintenance-requests"
+        routerLinkActive="active"
+      >
+        Maintenance Requests
+      </a>
+
+      <a
+        routerLink="/work-assignments"
+        routerLinkActive="active"
+      >
+        Work Assignments
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="app-main">
+  <router-outlet />
+</main>
