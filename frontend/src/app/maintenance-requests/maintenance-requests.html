@@ -1,10 +1,226 @@
 <div class="page-container">
-  <h1 class="page-title">Maintenance Request Management</h1>
-  <p class="page-description">
-    Create and manage property maintenance requests.
-  </p>
-
-  <div class="card">
-    <p>Maintenance Request reactive form — to be implemented by Ayomide Akisanmi-Samuel.</p>
+  <div class="page-heading">
+    <span class="page-eyebrow">MAINTENANCE MANAGEMENT</span>
+    <h1 class="page-title">Create Maintenance Request</h1>
+    <p class="page-description">
+      Report a maintenance issue and provide the details needed for resolution.
+    </p>
   </div>
+
+  <form
+    class="card maintenance-form"
+    [formGroup]="maintenanceForm"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+
+    <!-- SECTION 1: REQUEST DETAILS -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Request Details</h2>
+        <p>Tell us about the maintenance issue.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="issueTitle">
+          Issue Title <span class="required">*</span>
+        </label>
+
+        <input
+          id="issueTitle"
+          type="text"
+          class="form-control"
+          formControlName="issueTitle"
+          placeholder="e.g. Leaking kitchen sink"
+          [attr.aria-invalid]="f['issueTitle'].invalid && (f['issueTitle'].touched || submitted)"
+          aria-describedby="issueTitle-error"
+        />
+
+        @if (f['issueTitle'].invalid && (f['issueTitle'].touched || submitted)) {
+          <div id="issueTitle-error" class="error-message">
+            @if (f['issueTitle'].errors?.['required']) {
+              Issue title is required.
+            } @else if (f['issueTitle'].errors?.['minlength']) {
+              Issue title must contain at least 5 characters.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="category">
+          Maintenance Category <span class="required">*</span>
+        </label>
+
+        <select
+          id="category"
+          class="form-control"
+          formControlName="category"
+        >
+          <option value="">Select a category</option>
+
+          @for (category of categories; track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+
+        @if (f['category'].invalid && (f['category'].touched || submitted)) {
+          <div class="error-message">
+            Please select a maintenance category.
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="description">
+          Issue Description <span class="required">*</span>
+        </label>
+
+        <textarea
+          id="description"
+          class="form-control"
+          formControlName="description"
+          placeholder="Describe the issue, including any relevant details..."
+          rows="4"
+        ></textarea>
+
+        @if (f['description'].invalid && (f['description'].touched || submitted)) {
+          <div class="error-message">
+            @if (f['description'].errors?.['required']) {
+              Issue description is required.
+            } @else if (f['description'].errors?.['minlength']) {
+              Description must contain at least 10 characters.
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- SECTION 2: LOCATION & PRIORITY -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Location & Priority</h2>
+        <p>Identify where the issue occurred and its urgency.</p>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="property">
+            Property / Location <span class="required">*</span>
+          </label>
+
+          <select
+            id="property"
+            class="form-control"
+            formControlName="property"
+          >
+            <option value="">Select a property</option>
+
+            @for (property of properties; track property) {
+              <option [value]="property">{{ property }}</option>
+            }
+          </select>
+
+          @if (f['property'].invalid && (f['property'].touched || submitted)) {
+            <div class="error-message">
+              Please select a property or location.
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="priority">
+            Priority <span class="required">*</span>
+          </label>
+
+          <select
+            id="priority"
+            class="form-control"
+            formControlName="priority"
+          >
+            <option value="">Select priority</option>
+
+            @for (priority of priorities; track priority) {
+              <option [value]="priority">{{ priority }}</option>
+            }
+          </select>
+
+          @if (f['priority'].invalid && (f['priority'].touched || submitted)) {
+            <div class="error-message">
+              Please select a priority level.
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="requestDate">
+            Request Date <span class="required">*</span>
+          </label>
+
+          <input
+            id="requestDate"
+            type="date"
+            class="form-control"
+            formControlName="requestDate"
+          />
+
+          @if (f['requestDate'].invalid && (f['requestDate'].touched || submitted)) {
+            <div class="error-message">
+              Please select a request date.
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: REQUEST STATUS -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Request Status</h2>
+        <p>Set the current status of this maintenance request.</p>
+      </div>
+
+      <div class="form-group status-field">
+        <label class="form-label" for="status">
+          Status <span class="required">*</span>
+        </label>
+
+        <select
+          id="status"
+          class="form-control"
+          formControlName="status"
+        >
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </div>
+    </section>
+
+    <!-- FORM ACTIONS -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onReset()"
+      >
+        Reset Form
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        Create Request
+      </button>
+    </div>
+
+    <!-- SUBMISSION FEEDBACK -->
+    @if (successMessage) {
+      <div class="success-message" role="status">
+        {{ successMessage }}
+      </div>
+    }
+
+  </form>
 </div>
