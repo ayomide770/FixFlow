@@ -1,0 +1,126 @@
+/* FIXFLOW — PROPERTY & LOCATION MANAGEMENT COMPONENT | Developer: John Ofem */
+
+/* Page Heading */
+
+.page-heading {
+  margin-bottom: 28px;
+}
+
+.page-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+/* Form Container */
+
+.property-form {
+  max-width: 850px;
+}
+
+/* Form Sections */
+
+.form-section {
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.section-heading {
+  margin-bottom: 24px;
+}
+
+.section-heading h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* Two/Three-Column Form Layout */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 20px;
+}
+
+/* Required Field Indicator */
+
+.required {
+  color: var(--error);
+  margin-left: 2px;
+}
+
+/* Status Field */
+
+.status-field {
+  max-width: 400px;
+}
+
+/* Form Actions */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+/* Submission Feedback */
+
+.success-message {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+}
+
+/* Responsive Layout */
+
+@media (max-width: 768px) {
+  .page-heading {
+    margin-bottom: 22px;
+  }
+
+  .property-form {
+    max-width: 100%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-section {
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .status-field {
+    max-width: 100%;
+  }
+}
