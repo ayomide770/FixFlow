@@ -1,10 +1,231 @@
 <div class="page-container">
-  <h1 class="page-title">Work Assignment Management</h1>
-  <p class="page-description">
-    Assign and track maintenance work.
-  </p>
-
-  <div class="card">
-    <p>Work Assignment reactive form — to be implemented by Mensah Emmanuel Kofi.</p>
+  <div class="page-heading">
+    <span class="page-eyebrow">WORK ASSIGNMENT MANAGEMENT</span>
+    <h1 class="page-title">Create Work Assignment</h1>
+    <p class="page-description">
+      Assign a technician to a maintenance request and schedule the work.
+    </p>
   </div>
+
+  <form
+    class="card assignment-form"
+    [formGroup]="assignmentForm"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+
+    <!-- SECTION 1: ASSIGNMENT DETAILS -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Assignment Details</h2>
+        <p>Link this assignment to a maintenance request and choose a technician.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="maintenanceRequest">
+          Maintenance Request <span class="required">*</span>
+        </label>
+
+        <select
+          id="maintenanceRequest"
+          class="form-control"
+          formControlName="maintenanceRequest"
+        >
+          <option value="">Select a maintenance request</option>
+
+          @for (request of maintenanceRequests; track request) {
+            <option [value]="request">{{ request }}</option>
+          }
+        </select>
+
+        @if (f['maintenanceRequest'].invalid && (f['maintenanceRequest'].touched || submitted)) {
+          <div class="error-message">
+            Please select a maintenance request.
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="technician">
+          Assigned Technician <span class="required">*</span>
+        </label>
+
+        <select
+          id="technician"
+          class="form-control"
+          formControlName="technician"
+        >
+          <option value="">Select a technician</option>
+
+          @for (technician of technicians; track technician) {
+            <option [value]="technician">{{ technician }}</option>
+          }
+        </select>
+
+        @if (f['technician'].invalid && (f['technician'].touched || submitted)) {
+          <div class="error-message">
+            Please select a technician.
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- SECTION 2: SCHEDULE & WORK DETAILS -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Schedule & Work Details</h2>
+        <p>Set when the work will happen and describe what needs to be done.</p>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="scheduledDate">
+            Scheduled Date <span class="required">*</span>
+          </label>
+
+          <input
+            id="scheduledDate"
+            type="date"
+            class="form-control"
+            formControlName="scheduledDate"
+          />
+
+          @if (f['scheduledDate'].invalid && (f['scheduledDate'].touched || submitted)) {
+            <div class="error-message">
+              @if (f['scheduledDate'].errors?.['required']) {
+                Please select a scheduled date.
+              } @else if (f['scheduledDate'].errors?.['pastDate']) {
+                Scheduled date cannot be in the past.
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="estimatedHours">
+            Estimated Hours <span class="required">*</span>
+          </label>
+
+          <input
+            id="estimatedHours"
+            type="number"
+            class="form-control"
+            formControlName="estimatedHours"
+            placeholder="e.g. 2"
+            min="0.5"
+            max="40"
+            step="0.5"
+          />
+
+          @if (f['estimatedHours'].invalid && (f['estimatedHours'].touched || submitted)) {
+            <div class="error-message">
+              @if (f['estimatedHours'].errors?.['required']) {
+                Estimated hours are required.
+              } @else if (f['estimatedHours'].errors?.['min']) {
+                Estimated hours must be at least 0.5.
+              } @else if (f['estimatedHours'].errors?.['max']) {
+                Estimated hours cannot exceed 40.
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="workDescription">
+          Work Description <span class="required">*</span>
+        </label>
+
+        <textarea
+          id="workDescription"
+          class="form-control"
+          formControlName="workDescription"
+          placeholder="Describe the work the technician needs to carry out..."
+          rows="4"
+        ></textarea>
+
+        @if (f['workDescription'].invalid && (f['workDescription'].touched || submitted)) {
+          <div class="error-message">
+            @if (f['workDescription'].errors?.['required']) {
+              Work description is required.
+            } @else if (f['workDescription'].errors?.['minlength']) {
+              Work description must contain at least 10 characters.
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- SECTION 3: STATUS & NOTES -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Status & Notes</h2>
+        <p>Track the progress of this assignment and add any relevant notes.</p>
+      </div>
+
+      <div class="form-group status-field">
+        <label class="form-label" for="status">
+          Assignment Status <span class="required">*</span>
+        </label>
+
+        <select
+          id="status"
+          class="form-control"
+          formControlName="status"
+        >
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="notes">Notes</label>
+
+        <textarea
+          id="notes"
+          class="form-control"
+          formControlName="notes"
+          placeholder="Access instructions, parts required, tenant availability..."
+          rows="3"
+        ></textarea>
+
+        <div class="char-count">
+          {{ f['notes'].value?.length || 0 }} / 250
+        </div>
+
+        @if (f['notes'].invalid && (f['notes'].touched || submitted)) {
+          <div class="error-message">
+            Notes cannot exceed 250 characters.
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- FORM ACTIONS -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onReset()"
+      >
+        Reset Form
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        Create Assignment
+      </button>
+    </div>
+
+    <!-- SUBMISSION FEEDBACK -->
+    @if (successMessage) {
+      <div class="success-message" role="status">
+        {{ successMessage }}
+      </div>
+    }
+
+  </form>
 </div>
