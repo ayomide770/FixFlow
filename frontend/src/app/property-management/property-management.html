@@ -1,10 +1,253 @@
 <div class="page-container">
-  <h1 class="page-title">Property & Location Management</h1>
-  <p class="page-description">
-    Manage properties and service locations within FixFlow.
-  </p>
-
-  <div class="card">
-    <p>Property Management reactive form — to be implemented by John Ofem.</p>
+  <div class="page-heading">
+    <span class="page-eyebrow">PROPERTY &amp; LOCATION MANAGEMENT</span>
+    <h1 class="page-title">Create Property Record</h1>
+    <p class="page-description">
+      Add a property or service location and its address details to FixFlow.
+    </p>
   </div>
+
+  <form
+    class="card property-form"
+    [formGroup]="propertyForm"
+    (ngSubmit)="onSubmit()"
+    novalidate
+  >
+
+    <!-- SECTION 1: PROPERTY DETAILS -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Property Details</h2>
+        <p>Identify the property or service location.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="propertyName">
+          Property Name <span class="required">*</span>
+        </label>
+
+        <input
+          id="propertyName"
+          type="text"
+          class="form-control"
+          formControlName="propertyName"
+          placeholder="e.g. Maplewood Apartments"
+          [attr.aria-invalid]="f['propertyName'].invalid && (f['propertyName'].touched || submitted)"
+          aria-describedby="propertyName-error"
+        />
+
+        @if (f['propertyName'].invalid && (f['propertyName'].touched || submitted)) {
+          <div id="propertyName-error" class="error-message">
+            @if (f['propertyName'].errors?.['required']) {
+              Property name is required.
+            } @else if (f['propertyName'].errors?.['minlength']) {
+              Property name must contain at least 3 characters.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="propertyType">
+          Property Type <span class="required">*</span>
+        </label>
+
+        <select
+          id="propertyType"
+          class="form-control"
+          formControlName="propertyType"
+        >
+          <option value="">Select a property type</option>
+
+          @for (type of propertyTypes; track type) {
+            <option [value]="type">{{ type }}</option>
+          }
+        </select>
+
+        @if (f['propertyType'].invalid && (f['propertyType'].touched || submitted)) {
+          <div class="error-message">
+            Please select a property type.
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="notes">
+          Additional Location Details
+        </label>
+
+        <textarea
+          id="notes"
+          class="form-control"
+          formControlName="notes"
+          placeholder="Optional notes, such as access instructions or unit details..."
+          rows="4"
+        ></textarea>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ADDRESS INFORMATION -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Address Information</h2>
+        <p>Provide the location address for this property.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="addressLine1">
+          Street Address <span class="required">*</span>
+        </label>
+
+        <input
+          id="addressLine1"
+          type="text"
+          class="form-control"
+          formControlName="addressLine1"
+          placeholder="e.g. 123 Main Street"
+          [attr.aria-invalid]="f['addressLine1'].invalid && (f['addressLine1'].touched || submitted)"
+          aria-describedby="addressLine1-error"
+        />
+
+        @if (f['addressLine1'].invalid && (f['addressLine1'].touched || submitted)) {
+          <div id="addressLine1-error" class="error-message">
+            @if (f['addressLine1'].errors?.['required']) {
+              Street address is required.
+            } @else if (f['addressLine1'].errors?.['minlength']) {
+              Street address must contain at least 5 characters.
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="addressLine2">
+          Unit / Suite
+        </label>
+
+        <input
+          id="addressLine2"
+          type="text"
+          class="form-control"
+          formControlName="addressLine2"
+          placeholder="e.g. Unit 101 (optional)"
+        />
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="city">
+            City <span class="required">*</span>
+          </label>
+
+          <input
+            id="city"
+            type="text"
+            class="form-control"
+            formControlName="city"
+            placeholder="e.g. Kennesaw"
+          />
+
+          @if (f['city'].invalid && (f['city'].touched || submitted)) {
+            <div class="error-message">
+              City is required.
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="state">
+            State <span class="required">*</span>
+          </label>
+
+          <input
+            id="state"
+            type="text"
+            class="form-control"
+            formControlName="state"
+            placeholder="e.g. GA"
+          />
+
+          @if (f['state'].invalid && (f['state'].touched || submitted)) {
+            <div class="error-message">
+              State is required.
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="zipCode">
+            ZIP Code <span class="required">*</span>
+          </label>
+
+          <input
+            id="zipCode"
+            type="text"
+            class="form-control"
+            formControlName="zipCode"
+            placeholder="e.g. 30144"
+          />
+
+          @if (f['zipCode'].invalid && (f['zipCode'].touched || submitted)) {
+            <div class="error-message">
+              @if (f['zipCode'].errors?.['required']) {
+                ZIP code is required.
+              } @else if (f['zipCode'].errors?.['pattern']) {
+                Enter a valid ZIP code (e.g. 30144 or 30144-1234).
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: PROPERTY STATUS -->
+    <section class="form-section">
+      <div class="section-heading">
+        <h2>Property Status</h2>
+        <p>Set the current status of this property record.</p>
+      </div>
+
+      <div class="form-group status-field">
+        <label class="form-label" for="status">
+          Status <span class="required">*</span>
+        </label>
+
+        <select
+          id="status"
+          class="form-control"
+          formControlName="status"
+        >
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </div>
+    </section>
+
+    <!-- FORM ACTIONS -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onReset()"
+      >
+        Reset Form
+      </button>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        Save Property
+      </button>
+    </div>
+
+    <!-- SUBMISSION FEEDBACK -->
+    @if (successMessage) {
+      <div class="success-message" role="status">
+        {{ successMessage }}
+      </div>
+    }
+
+  </form>
 </div>
