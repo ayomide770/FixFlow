@@ -164,6 +164,24 @@ Run these from the `frontend/` directory:
 - Test locally with `ng serve` and confirm `ng build` completes successfully before pushing.
 - Commit and push to your individual branch, then open a pull request into `main` for review. **Do not push directly to `main`.**
 
+### Syncing with `main`
+
+After a pull request is merged, reset your local `main` to match GitHub before starting new work. This avoids merge conflicts later.
+
+```bash
+git fetch origin
+git checkout main
+git reset --hard origin/main
+```
+
+Then create a fresh branch for your next piece of work:
+
+```bash
+git checkout -b feature/<your-branch-name>
+```
+
+> **Warning:** `git reset --hard` permanently discards any uncommitted changes and any local commits on `main` that are not on GitHub. Commit and push your work to your feature branch first, and check `git status` is clean before running it.
+
 ---
 
 ## Project Status
@@ -173,7 +191,7 @@ Run these from the `frontend/` directory:
 - [x] Angular application scaffolded with shared UI foundation and routing
 - [x] Maintenance Request Management reactive form
 - [x] Property & Location Management reactive form
-- [ ] Work Assignment Management reactive form
+- [x] Work Assignment Management reactive form
 - [ ] Full component integration
 - [ ] Backend (Express/MongoDB) implementation
 - [ ] Google Maps Platform integration
