@@ -1,92 +1,111 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-
-import { MaintenanceRequestApi } from './maintenance-request-api';
-import { MaintenanceRequest } from './maintenance-request';
 
 @Component({
   selector: 'app-maintenance-requests',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './maintenance-requests.html',
   styleUrl: './maintenance-requests.css'
 })
-export class MaintenanceRequests implements OnInit {
+export class MaintenanceRequests {
 
-  // Access Angular services
-  private requestApi = inject(MaintenanceRequestApi);
-  private cdr = inject(ChangeDetectorRef);
+  maintenanceForm: FormGroup;
+  submitted = false;
+  successMessage = '';
 
-  // Store maintenance requests retrieved from MongoDB
-  requests: MaintenanceRequest[] = [];
-  loading = true;
-  errorMessage = '';
+  categories = [
+    'Plumbing',
+    'Electrical',
+    'HVAC',
+    'Structural',
+    'General Maintenance',
+    'Other'
+  ];
 
-  // ID of the request pending delete confirmation, if any
-  pendingDeleteId: string | null = null;
+  properties = [
+    'Maplewood Apartments - Unit 101',
+    'Maplewood Apartments - Unit 204',
+    'Oakridge Residence - Unit 3B',
+    'Riverside Commercial Plaza'
+  ];
 
-  // Load requests when the component starts
-  ngOnInit(): void {
-    this.loadRequests();
-  }
+  priorities = [
+    'Low',
+    'Medium',
+    'High',
+    'Urgent'
+  ];
 
-  // GET: Retrieve all maintenance requests
-  loadRequests(): void {
-    this.loading = true;
-    this.errorMessage = '';
+  statuses = [
+    'Submitted',
+    'In Progress',
+    'Resolved'
+  ];
 
-    this.requestApi.getRequests().subscribe({
-      next: (data) => {
-        this.requests = data;
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error loading maintenance requests:', err);
-        this.errorMessage =
-          'Unable to load maintenance requests. Is the backend server running?';
-        this.loading = false;
-        this.cdr.detectChanges();
-      }
+  constructor(private fb: FormBuilder) {
+    this.maintenanceForm = this.fb.group({
+      issueTitle: ['', [
+        Validators.required,
+        Validators.minLength(5)
+      ]],
+
+      description: ['', [
+        Validators.required,
+        Validators.minLength(10)
+      ]],
+
+      category: ['', Validators.required],
+
+      property: ['', Validators.required],
+
+      priority: ['', Validators.required],
+
+      requestDate: ['', Validators.required],
+
+      status: ['Submitted', Validators.required]
     });
   }
 
-  // Ask for confirmation before deleting a request
-  confirmDelete(requestId: string): void {
-    this.pendingDeleteId = requestId;
+  get f() {
+    return this.maintenanceForm.controls;
   }
 
-  // Cancel a pending delete confirmation
-  cancelDelete(): void {
-    this.pendingDeleteId = null;
+  onSubmit(): void {
+    this.submitted = true;
+    this.successMessage = '';
+
+    if (this.maintenanceForm.invalid) {
+      this.maintenanceForm.markAllAsTouched();
+      return;
+    }
+
+    console.log(
+      'Maintenance Request Form Data:',
+      this.maintenanceForm.value
+    );
+
+    this.successMessage =
+      'Maintenance request submitted successfully! (Demo only — no database save.)';
   }
 
-  // DELETE: Remove the selected maintenance request
-  onDelete(requestId: string): void {
-    this.requestApi.deleteRequest(requestId).subscribe({
-      next: () => {
-        this.requests = this.requests.filter(
-          (request) => request._id !== requestId
-        );
-        this.pendingDeleteId = null;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Delete failed:', err);
-        this.errorMessage = 'Unable to delete maintenance request.';
-        this.pendingDeleteId = null;
-        this.cdr.detectChanges();
-      }
+  onReset(): void {
+    this.maintenanceForm.reset({
+      issueTitle: '',
+      description: '',
+      category: '',
+      property: '',
+      priority: '',
+      requestDate: '',
+      status: 'Submitted'
     });
-  }
 
-  // Map a status value to a CSS class suffix
-  statusClass(status: string): string {
-    return 'status-' + status.toLowerCase().replace(/\s+/g, '-');
-  }
-
-  // Map a priority value to a CSS class suffix
-  priorityClass(priority: string): string {
-    return 'priority-' + priority.toLowerCase();
+    this.submitted = false;
+    this.successMessage = '';
   }
 }
