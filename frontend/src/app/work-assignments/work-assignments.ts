@@ -1,122 +1,87 @@
-import { Component } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators
-} from '@angular/forms';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
-// Custom validator: the scheduled date cannot be earlier than today
-export function notPastDateValidator(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) {
-    return null;
-  }
-
-  const selected = new Date(control.value + 'T00:00:00');
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  return selected < today ? { pastDate: true } : null;
-}
+import { WorkAssignmentApi } from './work-assignment-api';
+import { WorkAssignment } from './work-assignment';
 
 @Component({
   selector: 'app-work-assignments',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './work-assignments.html',
   styleUrl: './work-assignments.css'
 })
-export class WorkAssignments {
+export class WorkAssignments implements OnInit {
 
-  assignmentForm: FormGroup;
-  submitted = false;
-  successMessage = '';
+  // Access Angular services
+  private assignmentApi = inject(WorkAssignmentApi);
+  private cdr = inject(ChangeDetectorRef);
 
-  maintenanceRequests = [
-    'MR-1001 - Leaking kitchen sink (Maplewood Unit 101)',
-    'MR-1002 - Faulty hallway lighting (Maplewood Unit 204)',
-    'MR-1003 - AC not cooling (Oakridge Unit 3B)',
-    'MR-1004 - Cracked entrance tile (Riverside Plaza)'
-  ];
+  // Store work assignments retrieved from MongoDB
+  assignments: WorkAssignment[] = [];
+  loading = true;
+  errorMessage = '';
 
-  technicians = [
-    'Kwame Asante - Plumber',
-    'Sarah Johnson - Electrician',
-    'David Lee - HVAC Technician',
-    'Maria Lopez - General Maintenance'
-  ];
+  // ID of the assignment pending delete confirmation, if any
+  pendingDeleteId: string | null = null;
 
-  statuses = [
-    'Assigned',
-    'Scheduled',
-    'In Progress',
-    'Completed'
-  ];
+  // Load assignments when the component starts
+  ngOnInit(): void {
+    this.loadAssignments();
+  }
 
-  constructor(private fb: FormBuilder) {
-    this.assignmentForm = this.fb.group({
-      maintenanceRequest: ['', Validators.required],
+  // GET: Retrieve all work assignments
+  loadAssignments(): void {
+    this.loading = true;
+    this.errorMessage = '';
 
-      technician: ['', Validators.required],
-
-      scheduledDate: ['', [
-        Validators.required,
-        notPastDateValidator
-      ]],
-
-      estimatedHours: ['', [
-        Validators.required,
-        Validators.min(0.5),
-        Validators.max(40)
-      ]],
-
-      workDescription: ['', [
-        Validators.required,
-        Validators.minLength(10)
-      ]],
-
-      status: ['Assigned', Validators.required],
-
-      notes: ['', Validators.maxLength(250)]
+    this.assignmentApi.getAssignments().subscribe({
+      next: (data) => {
+        this.assignments = data;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading work assignments:', err);
+        this.errorMessage =
+          'Unable to load work assignments. Is the backend server running?';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  get f() {
-    return this.assignmentForm.controls;
+  // Ask for confirmation before deleting an assignment
+  confirmDelete(assignmentId: string): void {
+    this.pendingDeleteId = assignmentId;
   }
 
-  onSubmit(): void {
-    this.submitted = true;
-    this.successMessage = '';
-
-    if (this.assignmentForm.invalid) {
-      this.assignmentForm.markAllAsTouched();
-      return;
-    }
-
-    console.log(
-      'Work Assignment Form Data:',
-      this.assignmentForm.value
-    );
-
-    this.successMessage =
-      'Work assignment created successfully! (Demo only — no database save.)';
+  // Cancel a pending delete confirmation
+  cancelDelete(): void {
+    this.pendingDeleteId = null;
   }
 
-  onReset(): void {
-    this.assignmentForm.reset({
-      maintenanceRequest: '',
-      technician: '',
-      scheduledDate: '',
-      estimatedHours: '',
-      workDescription: '',
-      status: 'Assigned',
-      notes: ''
+  // DELETE: Remove the selected work assignment
+  onDelete(assignmentId: string): void {
+    this.assignmentApi.deleteAssignment(assignmentId).subscribe({
+      next: () => {
+        this.assignments = this.assignments.filter(
+          (assignment) => assignment._id !== assignmentId
+        );
+        this.pendingDeleteId = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+        this.errorMessage = 'Unable to delete work assignment.';
+        this.pendingDeleteId = null;
+        this.cdr.detectChanges();
+      }
     });
+  }
 
-    this.submitted = false;
-    this.successMessage = '';
+  // Map a status value to a CSS class suffix
+  statusClass(status: string): string {
+    return 'status-' + status.toLowerCase().replace(/\s+/g, '-');
   }
 }
