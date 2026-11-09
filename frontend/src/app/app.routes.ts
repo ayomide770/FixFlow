@@ -4,6 +4,7 @@ import { PropertyForm } from './property-management/property-form/property-form'
 import { MaintenanceRequests } from './maintenance-requests/maintenance-requests';
 import { MaintenanceRequestForm } from './maintenance-requests/maintenance-request-form/maintenance-request-form';
 import { WorkAssignments } from './work-assignments/work-assignments';
+import { WorkAssignmentForm } from './work-assignments/work-assignment-form/work-assignment-form';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,14 @@ export const routes: Routes = [
   {
     path: 'work-assignments',
     component: WorkAssignments
+  },
+  {
+    path: 'work-assignments/new',
+    component: WorkAssignmentForm
+  },
+  {
+    path: 'work-assignments/edit/:id',
+    component: WorkAssignmentForm
   },
   {
     path: '**',

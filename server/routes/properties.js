@@ -55,7 +55,7 @@ router.put('/:id', async (req, res) => {
     const updated = await Property.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updated) {
