@@ -166,7 +166,7 @@ npm start
 npm run dev
 ```
 
-The API will be available at **http://localhost:8010/api/properties**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials.
+The API will be available at **http://localhost:8001/api/properties**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials.
 
 | Method | Endpoint | Description |
 |---|---|---|

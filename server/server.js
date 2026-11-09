@@ -1,22 +1,19 @@
 require('dotenv').config();
 
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const propertyRoutes = require('./routes/properties');
-
 const app = express();
 
-const PORT = process.env.PORT || 8010;
+const PORT = process.env.PORT || 8001;
 const MONGODB_URI =
   process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/fixflow';
 
 // Allow requests from the Angular dev server
-// (4201 is included as a fallback dev port in case 4200 is in use)
-app.use(cors({
-  origin: ['http://localhost:4200', 'http://localhost:4201']
-}));
+app.use(cors({ origin: 'http://localhost:4200' }));
 
 // Parse incoming JSON request bodies
 app.use(express.json());
@@ -29,11 +26,22 @@ mongoose
 
 // Respond to requests at the home URL
 app.get('/', (req, res) => {
-  res.send('FixFlow Property & Location Management API is running!');
+  res.send('FixFlow API is running!');
 });
 
-// Property & Location Management CRUD routes
-app.use('/api/properties', propertyRoutes);
+// Auto-load every route module in routes/. Each file exports
+// { path, router } and is mounted automatically — new components add a
+// new file here without editing this file, so teammates working on
+// separate components never collide on the same line of server.js.
+const routesDir = path.join(__dirname, 'routes');
+
+fs.readdirSync(routesDir)
+  .filter((file) => file.endsWith('.js'))
+  .forEach((file) => {
+    const route = require(path.join(routesDir, file));
+    app.use(route.path, route.router);
+    console.log(`Mounted routes: ${route.path}`);
+  });
 
 // Start the Express server
 app.listen(PORT, () => {

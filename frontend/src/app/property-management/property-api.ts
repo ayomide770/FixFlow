@@ -11,7 +11,7 @@ export class PropertyApi {
   private http = inject(HttpClient);
 
   // Express backend API URL
-  private apiUrl = 'http://localhost:8010/api/properties';
+  private apiUrl = 'http://localhost:8001/api/properties';
 
   // GET: Retrieve all properties
   getProperties() {
