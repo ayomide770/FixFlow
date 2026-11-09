@@ -84,14 +84,14 @@ FixFlow integrates the Google Maps Platform to provide a visual representation o
 
 ## Tech Stack
 
-- **Frontend:** Angular 22 (standalone components, Reactive Forms, Angular Router)
-- **Backend:** Node.js / Express.js *(planned for a later milestone)*
-- **Database:** MongoDB *(planned for a later milestone)*
-- **Mapping:** Google Maps Platform — Maps JavaScript API
+- **Frontend:** Angular 22 (standalone components, Reactive Forms, Angular Router, HttpClient)
+- **Backend:** Node.js / Express.js
+- **Database:** MongoDB / Mongoose
+- **Mapping:** Google Maps Platform — Maps JavaScript API *(planned for a later milestone)*
 - **Testing:** Vitest (`ng test`)
-- **Tooling:** Angular CLI, Prettier
+- **Tooling:** Angular CLI, Prettier, Nodemon
 
-> **Note:** Milestone 1 focuses on the Angular frontend only. Each component's reactive form currently runs against local/demo data — database integration and full application wiring are planned for a later milestone.
+> **Status:** The Property & Location Management component has a full MongoDB-backed REST API and CRUD UI (list, add, edit, delete). Maintenance Request Management and Work Assignment Management currently have their reactive forms implemented against local/demo data; their own Express/MongoDB backends are in progress.
 
 ---
 
@@ -100,15 +100,24 @@ FixFlow integrates the Google Maps Platform to provide a visual representation o
 ```
 FixFlow/
 ├── README.md
-└── frontend/                          # Angular application
-    └── src/
-        └── app/
-            ├── property-management/       # John Ofem
-            ├── maintenance-requests/      # Ayomide Akisanmi-Samuel
-            ├── work-assignments/          # Mensah Emmanuel Kofi
-            ├── app.html / app.ts / app.css   # Shell: header, nav, router outlet
-            └── app.routes.ts                 # Application routes
-        └── styles.css                   # Shared global design system (colors, layout, forms, buttons)
+├── frontend/                          # Angular application
+│   └── src/
+│       ├── app/
+│       │   ├── property-management/       # John Ofem
+│       │   │   ├── property-management.ts/html/css   # Property list view
+│       │   │   ├── property-form/                     # Add / edit property form
+│       │   │   ├── property.ts                        # Property interface
+│       │   │   └── property-api.ts                     # HttpClient service
+│       │   ├── maintenance-requests/      # Ayomide Akisanmi-Samuel
+│       │   ├── work-assignments/          # Mensah Emmanuel Kofi
+│       │   ├── app.html / app.ts / app.css   # Shell: header, nav, router outlet
+│       │   └── app.routes.ts                 # Application routes
+│       └── styles.css                   # Shared global design system (colors, layout, forms, buttons)
+└── server/                             # Express/MongoDB backend
+    ├── models/                          # Mongoose schemas (e.g. property.js)
+    ├── routes/                          # Express route handlers (e.g. properties.js)
+    ├── server.js                        # App entry point (CORS, JSON parsing, Mongo connection)
+    └── .env.example                     # Template for local environment variables
 ```
 
 Each component folder contains its own `.ts`, `.html`, and `.css` files. Shared, application-wide styling (colors, typography, form controls, buttons, page layout) lives in `frontend/src/styles.css`; styling specific to a single component stays in that component's own CSS file.
@@ -136,6 +145,36 @@ npm start
 ```
 
 The application will be available at **http://localhost:4200/**. It automatically reloads whenever a source file is modified.
+
+### Running the Backend (Property & Location Management)
+
+The Property & Location Management component's CRUD operations require the Express/MongoDB backend to be running alongside the frontend.
+
+**Prerequisites:** [MongoDB Community Edition](https://www.mongodb.com/try/download/community) running locally on the default port (`27017`).
+
+```bash
+# From the repository root
+cd server
+
+# Install dependencies
+npm install
+
+# Start the server (production mode)
+npm start
+
+# Or, start with auto-restart on file changes
+npm run dev
+```
+
+The API will be available at **http://localhost:8001/api/properties**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/properties` | Retrieve all properties |
+| GET | `/api/properties/:id` | Retrieve a single property |
+| POST | `/api/properties` | Create a new property |
+| PUT | `/api/properties/:id` | Update an existing property |
+| DELETE | `/api/properties/:id` | Delete a property |
 
 ---
 
@@ -168,12 +207,17 @@ Run these from the `frontend/` directory:
 
 ## Project Status
 
-**Milestone 1 — In Progress**
+**Milestone 1 — Complete**
 
 - [x] Angular application scaffolded with shared UI foundation and routing
 - [x] Maintenance Request Management reactive form
 - [x] Property & Location Management reactive form
-- [ ] Work Assignment Management reactive form
-- [ ] Full component integration
-- [ ] Backend (Express/MongoDB) implementation
-- [ ] Google Maps Platform integration
+- [x] Work Assignment Management reactive form
+
+**Milestone 2 — In Progress**
+
+- [x] Express/MongoDB backend and full CRUD UI for Property & Location Management
+- [ ] Express/MongoDB backend and full CRUD UI for Maintenance Request Management
+- [ ] Express/MongoDB backend and full CRUD UI for Work Assignment Management
+- [ ] Full component integration (consolidated navigation across all three components' live data)
+- [ ] Google Maps Platform integration *(required for a later milestone)*

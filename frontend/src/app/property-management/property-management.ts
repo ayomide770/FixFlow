@@ -1,105 +1,87 @@
-import { Component } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+
+import { PropertyApi } from './property-api';
+import { Property } from './property';
 
 @Component({
   selector: 'app-property-management',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './property-management.html',
   styleUrl: './property-management.css'
 })
-export class PropertyManagement {
+export class PropertyManagement implements OnInit {
 
-  propertyForm: FormGroup;
-  submitted = false;
-  successMessage = '';
+  // Access Angular services
+  private propertyApi = inject(PropertyApi);
+  private cdr = inject(ChangeDetectorRef);
 
-  propertyTypes = [
-    'Residential',
-    'Commercial',
-    'Industrial',
-    'Mixed-Use',
-    'Other'
-  ];
+  // Store properties retrieved from MongoDB
+  properties: Property[] = [];
+  loading = true;
+  errorMessage = '';
 
-  statuses = [
-    'Active',
-    'Inactive',
-    'Under Maintenance'
-  ];
+  // ID of the property pending delete confirmation, if any
+  pendingDeleteId: string | null = null;
 
-  constructor(private fb: FormBuilder) {
-    this.propertyForm = this.fb.group({
-      propertyName: ['', [
-        Validators.required,
-        Validators.minLength(3)
-      ]],
+  // Load properties when the component starts
+  ngOnInit(): void {
+    this.loadProperties();
+  }
 
-      propertyType: ['', Validators.required],
+  // GET: Retrieve all properties
+  loadProperties(): void {
+    this.loading = true;
+    this.errorMessage = '';
 
-      addressLine1: ['', [
-        Validators.required,
-        Validators.minLength(5)
-      ]],
-
-      addressLine2: [''],
-
-      city: ['', Validators.required],
-
-      state: ['', Validators.required],
-
-      zipCode: ['', [
-        Validators.required,
-        Validators.pattern(/^\d{5}(-\d{4})?$/)
-      ]],
-
-      status: ['Active', Validators.required],
-
-      notes: ['']
+    this.propertyApi.getProperties().subscribe({
+      next: (data) => {
+        this.properties = data;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading properties:', err);
+        this.errorMessage =
+          'Unable to load properties. Is the backend server running?';
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  get f() {
-    return this.propertyForm.controls;
+  // Ask for confirmation before deleting a property
+  confirmDelete(propertyId: string): void {
+    this.pendingDeleteId = propertyId;
   }
 
-  onSubmit(): void {
-    this.submitted = true;
-    this.successMessage = '';
-
-    if (this.propertyForm.invalid) {
-      this.propertyForm.markAllAsTouched();
-      return;
-    }
-
-    console.log(
-      'Property Form Data:',
-      this.propertyForm.value
-    );
-
-    this.successMessage =
-      'Property record saved successfully! (Demo only — no database save.)';
+  // Cancel a pending delete confirmation
+  cancelDelete(): void {
+    this.pendingDeleteId = null;
   }
 
-  onReset(): void {
-    this.propertyForm.reset({
-      propertyName: '',
-      propertyType: '',
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      status: 'Active',
-      notes: ''
+  // DELETE: Remove the selected property
+  onDelete(propertyId: string): void {
+    this.propertyApi.deleteProperty(propertyId).subscribe({
+      next: () => {
+        this.properties = this.properties.filter(
+          (property) => property._id !== propertyId
+        );
+        this.pendingDeleteId = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+        this.errorMessage = 'Unable to delete property.';
+        this.pendingDeleteId = null;
+        this.cdr.detectChanges();
+      }
     });
+  }
 
-    this.submitted = false;
-    this.successMessage = '';
+  // Map a status value to a CSS class suffix
+  statusClass(status: string): string {
+    return 'status-' + status.toLowerCase().replace(/\s+/g, '-');
   }
 }
