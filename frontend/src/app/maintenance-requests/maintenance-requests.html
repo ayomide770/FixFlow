@@ -8,6 +8,8 @@
   </div>
 
   <div class="list-toolbar">
+    <input class="form-control list-search" type="search" aria-label="Search maintenance requests"
+      placeholder="Search requests" (input)="searchTerm = $any($event.target).value">
     <a routerLink="/maintenance-requests/new" class="btn btn-primary">+ New Request</a>
   </div>
 
@@ -21,7 +23,7 @@
     </div>
   } @else {
     <div class="request-grid">
-      @for (request of requests; track request._id) {
+      @for (request of filteredRequests; track request._id) {
         <div class="card request-card">
           <div class="request-card-header">
             <h3>{{ request.issueTitle }}</h3>
@@ -88,7 +90,7 @@
         </div>
       } @empty {
         <div class="card">
-          <p>No maintenance requests found. Create your first request to get started.</p>
+          <p>{{ searchTerm ? 'No maintenance requests match your search.' : 'No maintenance requests found. Create your first request to get started.' }}</p>
         </div>
       }
     </div>

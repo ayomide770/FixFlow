@@ -19,11 +19,20 @@ export class PropertyManagement implements OnInit {
 
   // Store properties retrieved from MongoDB
   properties: Property[] = [];
+  searchTerm = '';
   loading = true;
   errorMessage = '';
 
   // ID of the property pending delete confirmation, if any
   pendingDeleteId: string | null = null;
+
+  get filteredProperties(): Property[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    return term ? this.properties.filter((property) =>
+      [property.propertyName, property.propertyType, property.addressLine1,
+        property.city, property.state, property.zipCode].some((value) =>
+        value.toLowerCase().includes(term))) : this.properties;
+  }
 
   // Load properties when the component starts
   ngOnInit(): void {

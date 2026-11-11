@@ -129,6 +129,11 @@
                 <option [value]="property">{{ property }}</option>
               }
             </select>
+            @if (propertyLoadError) {
+              <div class="error-message">{{ propertyLoadError }}</div>
+            } @else if (properties.length === 0) {
+              <div class="error-message">Add a property before creating a maintenance request.</div>
+            }
 
             @if (f['property'].invalid && (f['property'].touched || submitted)) {
               <div class="error-message">

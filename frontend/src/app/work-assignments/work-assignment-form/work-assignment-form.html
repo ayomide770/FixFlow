@@ -46,6 +46,11 @@
               <option [value]="request">{{ request }}</option>
             }
           </select>
+          @if (requestLoadError) {
+            <div class="error-message">{{ requestLoadError }}</div>
+          } @else if (maintenanceRequests.length === 0) {
+            <div class="error-message">Add a maintenance request before creating a work assignment.</div>
+          }
 
           @if (f['maintenanceRequest'].invalid && (f['maintenanceRequest'].touched || submitted)) {
             <div class="error-message">

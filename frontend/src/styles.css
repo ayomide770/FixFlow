@@ -105,6 +105,25 @@ textarea.form-control {
   resize: vertical;
 }
 
+.list-toolbar {
+  gap: 12px;
+}
+
+.list-toolbar .list-search {
+  max-width: 360px;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .list-toolbar {
+    flex-direction: column;
+  }
+
+  .list-toolbar .list-search {
+    max-width: none;
+  }
+}
+
 /* Validation & Feedback */
 
 .error-message {
