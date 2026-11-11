@@ -53,7 +53,7 @@ export class PropertyForm implements OnInit {
     state: ['', Validators.required],
     zipCode: ['', [
       Validators.required,
-      Validators.pattern(/^\d{5}(-\d{4})?$/)
+      Validators.pattern(/^(\d{5}(-\d{4})?|\d{6})$/)
     ]],
     status: ['Active', Validators.required],
     notes: ['']

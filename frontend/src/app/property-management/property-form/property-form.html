@@ -185,7 +185,7 @@
 
           <div class="form-group">
             <label class="form-label" for="zipCode">
-              ZIP Code <span class="required">*</span>
+              Postal / ZIP Code <span class="required">*</span>
             </label>
 
             <input
@@ -199,9 +199,9 @@
             @if (f['zipCode'].invalid && (f['zipCode'].touched || submitted)) {
               <div class="error-message">
                 @if (f['zipCode'].errors?.['required']) {
-                  ZIP code is required.
+                  Postal or ZIP code is required.
                 } @else if (f['zipCode'].errors?.['pattern']) {
-                  Enter a valid ZIP code (e.g. 30144 or 30144-1234).
+                  Enter a five- or six-digit postal code, or ZIP+4.
                 }
               </div>
             }

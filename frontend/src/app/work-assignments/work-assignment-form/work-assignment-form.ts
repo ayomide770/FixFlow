@@ -11,6 +11,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 
 import { WorkAssignmentApi } from '../work-assignment-api';
 import { WorkAssignmentInput } from '../work-assignment';
+import { MaintenanceRequestApi } from '../../maintenance-requests/maintenance-request-api';
 
 // Custom validator: the scheduled date cannot be earlier than today
 export function notPastDateValidator(control: AbstractControl): ValidationErrors | null {
@@ -36,6 +37,7 @@ export class WorkAssignmentForm implements OnInit {
   // Access Angular services
   private fb = inject(FormBuilder);
   private assignmentApi = inject(WorkAssignmentApi);
+  private requestApi = inject(MaintenanceRequestApi);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
@@ -46,12 +48,8 @@ export class WorkAssignmentForm implements OnInit {
   loadError = '';
   saveError = '';
 
-  maintenanceRequests = [
-    'MR-1001 - Leaking kitchen sink (Maplewood Unit 101)',
-    'MR-1002 - Faulty hallway lighting (Maplewood Unit 204)',
-    'MR-1003 - AC not cooling (Oakridge Unit 3B)',
-    'MR-1004 - Cracked entrance tile (Riverside Plaza)'
-  ];
+  maintenanceRequests: string[] = [];
+  requestLoadError = '';
 
   technicians = [
     'Kwame Asante - Plumber',
@@ -86,6 +84,22 @@ export class WorkAssignmentForm implements OnInit {
   }
 
   ngOnInit(): void {
+    this.requestApi.getRequests().subscribe({
+      next: (requests) => {
+        this.maintenanceRequests = requests.map(
+          (request) => `${request.issueTitle} - ${request.property} (${request._id.slice(-6)})`
+        );
+        const selected = this.f.maintenanceRequest.value;
+        if (selected && !this.maintenanceRequests.includes(selected)) {
+          this.maintenanceRequests.unshift(selected);
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.requestLoadError = 'Unable to load maintenance requests. Start the backend and try again.';
+        this.cdr.detectChanges();
+      }
+    });
     // Read the assignment ID from the URL, if present
     this.assignmentId = this.route.snapshot.paramMap.get('id');
 
@@ -102,6 +116,13 @@ export class WorkAssignmentForm implements OnInit {
             status: assignment.status,
             notes: assignment.notes
           });
+          if (assignment.maintenanceRequest &&
+              !this.maintenanceRequests.includes(assignment.maintenanceRequest)) {
+            this.maintenanceRequests.unshift(assignment.maintenanceRequest);
+          }
+          // Historical assignments must remain editable after their scheduled date.
+          this.f.scheduledDate.setValidators(Validators.required);
+          this.f.scheduledDate.updateValueAndValidity();
           this.cdr.detectChanges();
         },
         error: (err) => {
