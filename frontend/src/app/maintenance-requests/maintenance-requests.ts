@@ -19,11 +19,20 @@ export class MaintenanceRequests implements OnInit {
 
   // Store maintenance requests retrieved from MongoDB
   requests: MaintenanceRequest[] = [];
+  searchTerm = '';
   loading = true;
   errorMessage = '';
 
   // ID of the request pending delete confirmation, if any
   pendingDeleteId: string | null = null;
+
+  get filteredRequests(): MaintenanceRequest[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    return term ? this.requests.filter((request) =>
+      [request.issueTitle, request.description, request.category,
+        request.property, request.priority, request.status].some((value) =>
+        value.toLowerCase().includes(term))) : this.requests;
+  }
 
   // Load requests when the component starts
   ngOnInit(): void {

@@ -8,6 +8,7 @@ import {
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 
 import { MaintenanceRequestApi } from '../maintenance-request-api';
+import { PropertyApi } from '../../property-management/property-api';
 
 @Component({
   selector: 'app-maintenance-request-form',
@@ -20,6 +21,7 @@ export class MaintenanceRequestForm implements OnInit {
   // Access Angular services
   private fb = inject(FormBuilder);
   private requestApi = inject(MaintenanceRequestApi);
+  private propertyApi = inject(PropertyApi);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
@@ -39,12 +41,8 @@ export class MaintenanceRequestForm implements OnInit {
     'Other'
   ];
 
-  properties = [
-    'Maplewood Apartments - Unit 101',
-    'Maplewood Apartments - Unit 204',
-    'Oakridge Residence - Unit 3B',
-    'Riverside Commercial Plaza'
-  ];
+  properties: string[] = [];
+  propertyLoadError = '';
 
   priorities = [
     'Low',
@@ -74,6 +72,20 @@ export class MaintenanceRequestForm implements OnInit {
   }
 
   ngOnInit(): void {
+    this.propertyApi.getProperties().subscribe({
+      next: (properties) => {
+        this.properties = properties.map(
+          (property) => `${property.propertyName} - ${property.addressLine1}, ${property.city}`
+        );
+        const selected = this.f.property.value;
+        if (selected && !this.properties.includes(selected)) this.properties.unshift(selected);
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.propertyLoadError = 'Unable to load properties. Start the backend and try again.';
+        this.cdr.detectChanges();
+      }
+    });
     // Read the request ID from the URL, if present
     this.requestId = this.route.snapshot.paramMap.get('id');
 
@@ -90,6 +102,9 @@ export class MaintenanceRequestForm implements OnInit {
             requestDate: request.requestDate.substring(0, 10),
             status: request.status
           });
+          if (request.property && !this.properties.includes(request.property)) {
+            this.properties.unshift(request.property);
+          }
           this.cdr.detectChanges();
         },
         error: (err) => {

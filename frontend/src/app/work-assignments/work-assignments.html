@@ -8,6 +8,8 @@
   </div>
 
   <div class="list-toolbar">
+    <input class="form-control list-search" type="search" aria-label="Search work assignments"
+      placeholder="Search assignments" (input)="searchTerm = $any($event.target).value">
     <a routerLink="/work-assignments/new" class="btn btn-primary">+ New Assignment</a>
   </div>
 
@@ -21,7 +23,7 @@
     </div>
   } @else {
     <div class="assignment-grid">
-      @for (assignment of assignments; track assignment._id) {
+      @for (assignment of filteredAssignments; track assignment._id) {
         <div class="card assignment-card">
           <div class="assignment-card-header">
             <h3>{{ assignment.technician }}</h3>
@@ -87,7 +89,7 @@
         </div>
       } @empty {
         <div class="card">
-          <p>No work assignments found. Create your first assignment to get started.</p>
+          <p>{{ searchTerm ? 'No work assignments match your search.' : 'No work assignments found. Create your first assignment to get started.' }}</p>
         </div>
       }
     </div>
