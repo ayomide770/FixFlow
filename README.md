@@ -91,7 +91,7 @@ FixFlow integrates the Google Maps Platform to provide a visual representation o
 - **Testing:** Vitest (`ng test`)
 - **Tooling:** Angular CLI, Prettier, Nodemon
 
-> **Status:** The Property & Location Management component has a full MongoDB-backed REST API and CRUD UI (list, add, edit, delete). Maintenance Request Management and Work Assignment Management currently have their reactive forms implemented against local/demo data; their own Express/MongoDB backends are in progress.
+> **Milestone 2 status:** All three components have MongoDB-backed REST APIs and list, search, add, edit, and delete screens. Maintenance requests select saved properties; work assignments select saved maintenance requests.
 
 ---
 
@@ -129,6 +129,7 @@ Each component folder contains its own `.ts`, `.html`, and `.css` files. Shared,
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - npm (bundled with Node.js)
+- [MongoDB Community Edition](https://www.mongodb.com/try/download/community), running locally on port `27017`
 
 ### Setup
 
@@ -146,11 +147,9 @@ npm start
 
 The application will be available at **http://localhost:4200/**. It automatically reloads whenever a source file is modified.
 
-### Running the Backend (Property & Location Management)
+### Running the Backend (all three components)
 
-The Property & Location Management component's CRUD operations require the Express/MongoDB backend to be running alongside the frontend.
-
-**Prerequisites:** [MongoDB Community Edition](https://www.mongodb.com/try/download/community) running locally on the default port (`27017`).
+All three components' CRUD operations require the Express/MongoDB backend to run alongside the frontend. Start it in a separate terminal.
 
 ```bash
 # From the repository root
@@ -166,7 +165,7 @@ npm start
 npm run dev
 ```
 
-The API will be available at **http://localhost:8001/api/properties**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials.
+The API is available at **http://localhost:8001**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -175,6 +174,8 @@ The API will be available at **http://localhost:8001/api/properties**. By defaul
 | POST | `/api/properties` | Create a new property |
 | PUT | `/api/properties/:id` | Update an existing property |
 | DELETE | `/api/properties/:id` | Delete a property |
+
+The same GET, POST, PUT, and DELETE pattern is available at `/api/maintenance-requests` and `/api/work-assignments`.
 
 ---
 
@@ -214,10 +215,10 @@ Run these from the `frontend/` directory:
 - [x] Property & Location Management reactive form
 - [x] Work Assignment Management reactive form
 
-**Milestone 2 — In Progress**
+**Milestone 2 — Integrated**
 
 - [x] Express/MongoDB backend and full CRUD UI for Property & Location Management
-- [ ] Express/MongoDB backend and full CRUD UI for Maintenance Request Management
-- [ ] Express/MongoDB backend and full CRUD UI for Work Assignment Management
-- [ ] Full component integration (consolidated navigation across all three components' live data)
-- [ ] Google Maps Platform integration *(required for a later milestone)*
+- [x] Express/MongoDB backend and full CRUD UI for Maintenance Request Management
+- [x] Express/MongoDB backend and full CRUD UI for Work Assignment Management
+- [x] Consolidated navigation, database-backed selectors, and search across all three components
+- [ ] Google Maps Platform integration *(planned for a later milestone)*

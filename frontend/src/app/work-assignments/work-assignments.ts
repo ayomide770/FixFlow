@@ -19,11 +19,20 @@ export class WorkAssignments implements OnInit {
 
   // Store work assignments retrieved from MongoDB
   assignments: WorkAssignment[] = [];
+  searchTerm = '';
   loading = true;
   errorMessage = '';
 
   // ID of the assignment pending delete confirmation, if any
   pendingDeleteId: string | null = null;
+
+  get filteredAssignments(): WorkAssignment[] {
+    const term = this.searchTerm.trim().toLowerCase();
+    return term ? this.assignments.filter((assignment) =>
+      [assignment.maintenanceRequest, assignment.technician,
+        assignment.workDescription, assignment.status, assignment.notes].some((value) =>
+        value.toLowerCase().includes(term))) : this.assignments;
+  }
 
   // Load assignments when the component starts
   ngOnInit(): void {

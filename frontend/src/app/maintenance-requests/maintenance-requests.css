@@ -1,9 +1,9 @@
-/*FIXFLOW — MAINTENANCE REQUEST COMPONENT | Developer: Ayomide Akisanmi-Samuel */
+/* FIXFLOW — MAINTENANCE REQUEST COMPONENT | Developer: Ayomide Akisanmi-Samuel */
 
 /* Page Heading */
 
 .page-heading {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .page-eyebrow {
@@ -15,112 +15,187 @@
   letter-spacing: 1.5px;
 }
 
-/* Form Container */
+/* Toolbar */
 
-.maintenance-form {
-  max-width: 850px;
+.list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
-/* Form Sections */
+/* Request Grid */
 
-.form-section {
-  padding-bottom: 28px;
-  margin-bottom: 28px;
-  border-bottom: 1px solid var(--border);
+.request-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
 }
 
-.form-section:last-of-type {
-  margin-bottom: 0;
+.request-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.section-heading {
-  margin-bottom: 24px;
+.request-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 
-.section-heading h2 {
-  margin: 0 0 6px;
+.request-card-header h3 {
+  margin: 0;
   font-size: 17px;
   font-weight: 650;
-  color: var(--text-primary);
   letter-spacing: -0.3px;
 }
 
-.section-heading p {
-  margin: 0;
+.request-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.request-category {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.request-description {
+  margin: 4px 0 0;
   color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.request-details {
+  margin: 4px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Status Badge */
+
+.status-badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.status-submitted {
+  background: #eff6ff;
+  color: var(--accent);
+}
+
+.status-in-progress {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.status-resolved {
+  background: #f0fdf4;
+  color: var(--success);
+}
+
+/* Priority Badge */
+
+.priority-badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.priority-low {
+  background: #f1f5f9;
+  color: var(--text-secondary);
+}
+
+.priority-medium {
+  background: #eff6ff;
+  color: var(--accent);
+}
+
+.priority-high {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.priority-urgent {
+  background: #fef2f2;
+  color: var(--error);
+}
+
+/* Card Actions */
+
+.request-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.request-card-actions .btn {
+  flex: 1;
+  min-height: 38px;
+  padding: 8px 14px;
   font-size: 13px;
 }
 
-/* Two-Column Form Layout */
+/* Inline Delete Confirmation */
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 20px;
+.delete-confirm {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
 
-/* Required Field Indicator */
-
-.required {
+.delete-confirm p {
+  margin: 0 0 10px;
   color: var(--error);
-  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-/* Status Field */
-
-.status-field {
-  max-width: 400px;
-}
-
-/* Form Actions */
-
-.form-actions {
+.delete-confirm-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 4px;
+  gap: 10px;
 }
 
-/* Submission Feedback */
-
-.success-message {
-  margin-top: 20px;
-  padding: 14px 16px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
+.delete-confirm-actions .btn {
+  flex: 1;
+  min-height: 38px;
+  padding: 8px 14px;
+  font-size: 13px;
 }
 
 /* Responsive Layout */
 
 @media (max-width: 768px) {
-  .page-heading {
-    margin-bottom: 22px;
-  }
-
-  .maintenance-form {
-    max-width: 100%;
-  }
-
-  .form-grid {
+  .request-grid {
     grid-template-columns: 1fr;
-    gap: 0;
   }
 
-  .form-section {
-    padding-bottom: 24px;
-    margin-bottom: 24px;
+  .list-toolbar {
+    justify-content: stretch;
   }
 
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .form-actions .btn {
+  .list-toolbar .btn {
     width: 100%;
-  }
-
-  .status-field {
-    max-width: 100%;
+    text-align: center;
   }
 }

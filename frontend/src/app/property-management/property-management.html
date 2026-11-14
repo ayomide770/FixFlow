@@ -8,6 +8,8 @@
   </div>
 
   <div class="list-toolbar">
+    <input class="form-control list-search" type="search" aria-label="Search properties"
+      placeholder="Search properties" (input)="searchTerm = $any($event.target).value">
     <a routerLink="/properties/new" class="btn btn-primary">+ Add New Property</a>
   </div>
 
@@ -21,7 +23,7 @@
     </div>
   } @else {
     <div class="property-grid">
-      @for (property of properties; track property._id) {
+      @for (property of filteredProperties; track property._id) {
         <div class="card property-card">
           <div class="property-card-header">
             <h3>{{ property.propertyName }}</h3>
@@ -89,7 +91,7 @@
         </div>
       } @empty {
         <div class="card">
-          <p>No properties found. Add your first property to get started.</p>
+          <p>{{ searchTerm ? 'No properties match your search.' : 'No properties found. Add your first property to get started.' }}</p>
         </div>
       }
     </div>
