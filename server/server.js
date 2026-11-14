@@ -9,8 +9,12 @@ const cors = require('cors');
 const app = express();
 
 const PORT = process.env.PORT || 8001;
-const MONGODB_URI =
-  process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/fixflow';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  console.error('MONGODB_URI is required. Add your personal Atlas connection string to server/.env.');
+  process.exit(1);
+}
 
 // Allow requests from the Angular dev server
 app.use(cors({ origin: 'http://localhost:4200' }));

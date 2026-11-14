@@ -129,27 +129,28 @@ Each component folder contains its own `.ts`, `.html`, and `.css` files. Shared,
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - npm (bundled with Node.js)
-- [MongoDB Community Edition](https://www.mongodb.com/try/download/community), running locally on port `27017`
+- A personal MongoDB Atlas connection string for the shared FixFlow database
 
 ### Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/ayomide770/FixFlow.git
-cd FixFlow/frontend
+cd FixFlow/server
 
-# Install dependencies
+# Copy the template and add your personal Atlas URI to the ignored .env file
+cp .env.example .env
+
+# Install and start the backend
 npm install
-
-# Start the development server
 npm start
 ```
 
-The application will be available at **http://localhost:4200/**. It automatically reloads whenever a source file is modified.
+In a second terminal, run `cd FixFlow/frontend`, `npm install`, and `npm start`. The application will be available at **http://localhost:4200/**.
 
 ### Running the Backend (all three components)
 
-All three components' CRUD operations require the Express/MongoDB backend to run alongside the frontend. Start it in a separate terminal.
+All three components' CRUD operations use the same Atlas database through the Express backend. Start it in a separate terminal.
 
 ```bash
 # From the repository root
@@ -165,7 +166,7 @@ npm start
 npm run dev
 ```
 
-The API is available at **http://localhost:8001**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
+The API is available at **http://localhost:8001**. It requires `MONGODB_URI` in `server/.env` and connects to the shared MongoDB Atlas database. `.env` is gitignored; never commit real credentials. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
 
 | Method | Endpoint | Description |
 |---|---|---|
