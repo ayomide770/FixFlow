@@ -130,27 +130,28 @@ Each component folder contains its own `.ts`, `.html`, and `.css` files. Shared,
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - npm (bundled with Node.js)
-- A MongoDB Atlas database user for this project's shared cluster (see [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation) below). No local MongoDB installation is required — the application connects to a cloud-hosted Atlas cluster.
+- A personal MongoDB Atlas connection string for the shared FixFlow database (see [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation) below). No local MongoDB installation is required — the application connects to a cloud-hosted Atlas cluster.
 
 ### Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/ayomide770/FixFlow.git
-cd FixFlow/frontend
+cd FixFlow/server
 
-# Install dependencies
+# Copy the template and add your personal Atlas URI to the ignored .env file
+cp .env.example .env
+
+# Install and start the backend
 npm install
-
-# Start the development server
 npm start
 ```
 
-The application will be available at **http://localhost:4200/**. It automatically reloads whenever a source file is modified.
+In a second terminal, run `cd FixFlow/frontend`, `npm install`, and `npm start`. The application will be available at **http://localhost:4200/**.
 
 ### Running the Backend (all three components)
 
-All three components' CRUD operations require the Express/MongoDB backend to run alongside the frontend. Start it in a separate terminal.
+All three components' CRUD operations use the same Atlas database through the Express backend. Start it in a separate terminal.
 
 ```bash
 # From the repository root
@@ -166,7 +167,7 @@ npm start
 npm run dev
 ```
 
-The API is available at **http://localhost:8001**. The connection string that points the backend at MongoDB Atlas lives in `server/.env` (copied from `server/.env.example`, which shows the required format but contains no real credentials — see [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation) for how to obtain your own). `.env` is gitignored and must never be committed. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
+The API is available at **http://localhost:8001**. It requires `MONGODB_URI` to be set in `server/.env` (copied from `server/.env.example`, which shows the required format but contains no real credentials — see [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation) for how to obtain your own); the server exits immediately with an error if it's missing. `.env` is gitignored and must never be committed. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
 
 | Method | Endpoint | Description |
 |---|---|---|

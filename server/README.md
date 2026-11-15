@@ -22,7 +22,9 @@ To add a component:
 
 3. That's it — `server.js` picks it up automatically on the next restart (or immediately with `npm run dev`, which uses Nodemon).
 
-## Running locally
+## Running with MongoDB Atlas
+
+Each team member needs their own Atlas connection string for the shared FixFlow database. Copy `.env.example` to `.env`, then replace the placeholder `MONGODB_URI` with your personal connection string. Keep `.env` local; it is gitignored. You do not need a local MongoDB server.
 
 ```bash
 npm install
@@ -30,4 +32,4 @@ npm start      # node server.js
 npm run dev    # nodemon server.js (auto-restarts on file changes)
 ```
 
-Requires a local MongoDB instance running on the default port (`27017`). Copy `.env.example` to `.env` to override the port or connection string — `.env` is gitignored, never commit real credentials.
+The server reports `Connected to MongoDB` after Atlas is ready and serves the API at `http://localhost:8001`.
