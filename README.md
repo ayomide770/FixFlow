@@ -19,6 +19,7 @@ The application is being built on the **MEAN stack** (MongoDB, Express.js, Angul
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
+- [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation)
 - [Available Scripts](#available-scripts)
 - [Branching & Development Workflow](#branching--development-workflow)
 - [Project Status](#project-status)
@@ -86,7 +87,7 @@ FixFlow integrates the Google Maps Platform to provide a visual representation o
 
 - **Frontend:** Angular 22 (standalone components, Reactive Forms, Angular Router, HttpClient)
 - **Backend:** Node.js / Express.js
-- **Database:** MongoDB / Mongoose
+- **Database:** MongoDB Atlas (cloud-hosted) / Mongoose
 - **Mapping:** Google Maps Platform — Maps JavaScript API *(planned for a later milestone)*
 - **Testing:** Vitest (`ng test`)
 - **Tooling:** Angular CLI, Prettier, Nodemon
@@ -117,7 +118,7 @@ FixFlow/
     ├── models/                          # Mongoose schemas (e.g. property.js)
     ├── routes/                          # Express route handlers (e.g. properties.js)
     ├── server.js                        # App entry point (CORS, JSON parsing, Mongo connection)
-    └── .env.example                     # Template for local environment variables
+    └── .env.example                     # Template for the MongoDB Atlas connection string (no real credentials)
 ```
 
 Each component folder contains its own `.ts`, `.html`, and `.css` files. Shared, application-wide styling (colors, typography, form controls, buttons, page layout) lives in `frontend/src/styles.css`; styling specific to a single component stays in that component's own CSS file.
@@ -129,7 +130,7 @@ Each component folder contains its own `.ts`, `.html`, and `.css` files. Shared,
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - npm (bundled with Node.js)
-- [MongoDB Community Edition](https://www.mongodb.com/try/download/community), running locally on port `27017`
+- A MongoDB Atlas database user for this project's shared cluster (see [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation) below). No local MongoDB installation is required — the application connects to a cloud-hosted Atlas cluster.
 
 ### Setup
 
@@ -165,7 +166,7 @@ npm start
 npm run dev
 ```
 
-The API is available at **http://localhost:8001**. By default it connects to a local MongoDB instance at `mongodb://127.0.0.1:27017/fixflow` — copy `server/.env.example` to `server/.env` to override the port or connection string. `.env` is gitignored; never commit real credentials. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
+The API is available at **http://localhost:8001**. The connection string that points the backend at MongoDB Atlas lives in `server/.env` (copied from `server/.env.example`, which shows the required format but contains no real credentials — see [MongoDB Atlas Database Implementation](#mongodb-atlas-database-implementation) for how to obtain your own). `.env` is gitignored and must never be committed. Open the frontend at **http://localhost:4200/** so its origin matches the backend CORS setting.
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -176,6 +177,79 @@ The API is available at **http://localhost:8001**. By default it connects to a l
 | DELETE | `/api/properties/:id` | Delete a property |
 
 The same GET, POST, PUT, and DELETE pattern is available at `/api/maintenance-requests` and `/api/work-assignments`.
+
+---
+
+## MongoDB Atlas Database Implementation
+
+FixFlow's database is hosted on **MongoDB Atlas** — a cloud-hosted, managed MongoDB service — rather than a MongoDB instance installed on any individual's computer. This means all three components, for every team member, read and write the same live database over the internet, from whichever machine they're developing on.
+
+### Architecture
+
+```
+Angular (localhost:4200)
+      │  HttpClient (REST)
+      ▼
+Express / Node.js (localhost:8001)
+      │  Mongoose (ODM)
+      ▼
+MongoDB Atlas — Cluster0 (cloud)
+      └── fixflow database
+            ├── Properties          (Property & Location Management)
+            ├── MaintenanceRequests (Maintenance Request Management)
+            └── WorkAssignments     (Work Assignment Management)
+```
+
+Angular never talks to MongoDB directly — every request goes through the Express API, which uses Mongoose models (`server/models/`) to read and write documents in Atlas. This keeps the database connection string and credentials entirely server-side.
+
+### Cluster configuration
+
+| Setting | Value |
+|---|---|
+| Provider / Tier | AWS, M0 (Free Shared Tier) |
+| Cluster name | `Cluster0` |
+| Database name | `fixflow` |
+| Collections | `Properties`, `MaintenanceRequests`, `WorkAssignments` |
+| Network Access | `0.0.0.0/0` (allow access from anywhere) |
+
+The Network Access setting is intentionally open to any IP address. This is a deliberate, pragmatic choice for a class project where team members connect from different, unpredictable home networks — in a production deployment this would instead be restricted to specific IP ranges.
+
+### Access control: project roles vs. database users
+
+Atlas access is split into two independent layers, both scoped per team member rather than shared:
+
+**1. Database users** — the credentials the *application* uses to authenticate when connecting (configured under Atlas → Database Access). Each team member has their own:
+
+| Database Username | Role | Used by |
+|---|---|---|
+| `fixflow-app` | Read and write to any database | Shared/general application testing |
+| `fixflow-ayo` | Read and write to any database | Ayomide Akisanmi-Samuel's local backend |
+| `fixflow-mensah` | Read and write to any database | Mensah Emmanuel Kofi's local backend |
+
+Every team member's local `server/.env` contains a `MONGODB_URI` built from their own username and password:
+
+```
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.sw2mcu8.mongodb.net/fixflow?retryWrites=true&w=majority
+```
+
+**2. Project (console) access** — separate from the above, this controls who can log into the Atlas *website* to browse data and view the cluster (configured under Atlas → Project Access). The project owner holds **Project Owner** (full administrative control); other team members are invited with **Project Read Only** plus **Project Data Access Read Only**, which lets them use the Data Explorer / Browse Collections view to inspect and screenshot live documents for reporting purposes, without being able to modify cluster configuration, delete data, or manage billing.
+
+### Setting up your own local environment
+
+1. Request a database username and password for the shared cluster from the project owner (John Ofem) — do not reuse another team member's credentials.
+2. Copy the template and fill in your credentials:
+   ```bash
+   cd server
+   cp .env.example .env
+   ```
+3. Edit `server/.env` and replace `<your-username>` / `<your-password>` in the `MONGODB_URI` line with the values you were given. Leave `PORT=8001` as-is.
+4. Start the backend (`npm start` from `server/`) and confirm the terminal prints `Connected to MongoDB`.
+
+`.env` is listed in `.gitignore` and is never committed — `server/.env.example` in this repository contains only placeholder values, consistent with the requirement not to publish database credentials.
+
+### Verifying data in Atlas
+
+Anyone with Project Data Access can confirm records are actually being persisted to the cloud (not just appearing in the UI) by signing into [cloud.mongodb.com](https://cloud.mongodb.com), opening this project, and going to **Database → Browse Collections** on `Cluster0`. The `fixflow` database's three collections (`Properties`, `MaintenanceRequests`, `WorkAssignments`) will reflect every Create, Update, and Delete performed through the application in real time.
 
 ---
 
@@ -221,4 +295,5 @@ Run these from the `frontend/` directory:
 - [x] Express/MongoDB backend and full CRUD UI for Maintenance Request Management
 - [x] Express/MongoDB backend and full CRUD UI for Work Assignment Management
 - [x] Consolidated navigation, database-backed selectors, and search across all three components
+- [x] Migrated from local MongoDB to MongoDB Atlas (cloud), with per-member database credentials and Project Data Access for all team members
 - [ ] Google Maps Platform integration *(planned for a later milestone)*
