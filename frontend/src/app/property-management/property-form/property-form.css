@@ -51,6 +51,46 @@
   font-size: 13px;
 }
 
+/* Address-to-Coordinates Lookup */
+
+.geocode-action {
+  margin-bottom: 20px;
+}
+
+.geocode-action .error-message,
+.geocode-action .geocode-success {
+  margin: 10px 0 0;
+}
+
+.geocode-success {
+  color: var(--success);
+  font-size: 13px;
+}
+
+/* Location Picker Map */
+
+.location-picker {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.location-picker-map {
+  width: 100%;
+  height: 320px;
+}
+
+.location-picker-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
 /* Two/Three-Column Form Layout */
 
 .form-grid {
@@ -119,5 +159,15 @@
 
   .status-field {
     max-width: 100%;
+  }
+
+  .location-picker-map {
+    height: 260px;
+  }
+
+  .location-picker-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }

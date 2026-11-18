@@ -1,0 +1,63 @@
+/* FIXFLOW — PROPERTY MAP COMPONENT | Developer: John Ofem */
+
+.page-heading {
+  margin-bottom: 20px;
+}
+
+.page-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.page-description a {
+  color: var(--accent);
+}
+
+/* Toolbar */
+
+.list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+/* Map Card */
+
+.map-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.map-container {
+  width: 100%;
+  height: 480px;
+}
+
+.map-summary {
+  margin: 0;
+  padding: 14px 20px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive Layout */
+
+@media (max-width: 768px) {
+  .list-toolbar {
+    justify-content: stretch;
+  }
+
+  .list-toolbar .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .map-container {
+    height: 360px;
+  }
+}

@@ -10,6 +10,7 @@
   <div class="list-toolbar">
     <input class="form-control list-search" type="search" aria-label="Search properties"
       placeholder="Search properties" (input)="searchTerm = $any($event.target).value">
+    <a routerLink="/properties/map" class="btn btn-secondary">View Map</a>
     <a routerLink="/properties/new" class="btn btn-primary">+ Add New Property</a>
   </div>
 

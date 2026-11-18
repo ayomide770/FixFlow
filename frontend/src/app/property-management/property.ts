@@ -9,6 +9,8 @@ export interface Property {
   zipCode: string;
   status: string;
   notes: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 // New properties do not have a MongoDB ID yet

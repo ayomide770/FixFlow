@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { PropertyManagement } from './property-management/property-management';
 import { PropertyForm } from './property-management/property-form/property-form';
+import { PropertyMap } from './property-management/property-map/property-map';
 import { MaintenanceRequests } from './maintenance-requests/maintenance-requests';
 import { MaintenanceRequestForm } from './maintenance-requests/maintenance-request-form/maintenance-request-form';
 import { WorkAssignments } from './work-assignments/work-assignments';
@@ -23,6 +24,10 @@ export const routes: Routes = [
   {
     path: 'properties/edit/:id',
     component: PropertyForm
+  },
+  {
+    path: 'properties/map',
+    component: PropertyMap
   },
   {
     path: 'maintenance-requests',

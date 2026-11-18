@@ -180,6 +180,15 @@ textarea.form-control {
   background: #e2e8f0;
 }
 
+.btn-secondary:disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.btn-secondary:disabled:hover {
+  background: #f1f5f9;
+}
+
 .btn-danger {
   background: #fef2f2;
   color: var(--error);
@@ -188,6 +197,24 @@ textarea.form-control {
 
 .btn-danger:hover {
   background: #fee2e2;
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 /* Responsive Layout */
