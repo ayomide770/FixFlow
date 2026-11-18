@@ -11,7 +11,9 @@ const propertySchema = new mongoose.Schema(
     state: { type: String, required: true },
     zipCode: { type: String, required: true },
     status: { type: String, required: true, default: 'Active' },
-    notes: { type: String, default: '' }
+    notes: { type: String, default: '' },
+    latitude: { type: Number, default: null },
+    longitude: { type: Number, default: null }
   },
   { timestamps: true }
 );

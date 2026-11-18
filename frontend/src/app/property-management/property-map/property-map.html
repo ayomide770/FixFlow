@@ -1,0 +1,46 @@
+<div class="page-container">
+  <div class="page-heading">
+    <span class="page-eyebrow">PROPERTY &amp; LOCATION MANAGEMENT</span>
+    <h1 class="page-title">Property Map</h1>
+    <p class="page-description">
+      A geographic view of properties and service locations, powered by
+      <a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>
+      and <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.
+    </p>
+  </div>
+
+  <div class="list-toolbar">
+    <a routerLink="/properties" class="btn btn-secondary">&larr; Back to Properties</a>
+  </div>
+
+  @if (loading) {
+    <div class="card">
+      <p>Loading properties...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="card">
+      <p class="error-message">{{ errorMessage }}</p>
+    </div>
+  } @else if (mappedProperties.length === 0) {
+    <div class="card">
+      <p>
+        No properties have map coordinates yet. Add a latitude and longitude
+        when you <a routerLink="/properties/new">create a property</a> or
+        edit an existing one to see it here.
+      </p>
+    </div>
+  } @else {
+    <div class="card map-card">
+      @if (mapLoadError) {
+        <p class="error-message">{{ mapLoadError }}</p>
+      } @else {
+        <div #mapContainer class="map-container"></div>
+      }
+
+      <p class="map-summary">
+        Showing {{ mappedProperties.length }} of {{ properties.length }}
+        {{ properties.length === 1 ? 'property' : 'properties' }} with map coordinates.
+      </p>
+    </div>
+  }
+</div>

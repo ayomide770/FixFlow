@@ -65,10 +65,12 @@ Connecting work assignments to maintenance requests lets FixFlow represent the f
 
 ## Third-Party API Integration
 
-**Google Maps Platform — Maps JavaScript API**
-[developers.google.com/maps/documentation/javascript](https://developers.google.com/maps/documentation/javascript)
+**Leaflet + OpenStreetMap**
+[leafletjs.com](https://leafletjs.com) · [openstreetmap.org](https://www.openstreetmap.org)
 
-FixFlow integrates the Google Maps Platform to provide a visual representation of property and maintenance locations. Location data maintained through the Property & Location Management component is used to display relevant properties or service locations on a map, giving users geographic context for maintenance activity. This integration supplements — and does not replace — the CRUD functionality implemented within the three student-developed components.
+FixFlow integrates Leaflet (an open-source JavaScript mapping library) with OpenStreetMap tile data to provide a visual representation of property and service locations. Properties that have been given a latitude/longitude (via the Property & Location Management form) appear as markers on an interactive map at `/properties/map`, each with a popup showing the property's name, address, and status. Markers are built from live data retrieved through the Property & Location Management component's MongoDB Atlas-backed API — no coordinates are hardcoded. This integration supplements — and does not replace — the CRUD functionality implemented within the three student-developed components.
+
+> **Note:** The Project Proposal originally named the Google Maps Platform (Maps JavaScript API) for this integration. During Milestone 3 development, Google began requiring a linked billing account even for free-tier Maps JavaScript API usage. To keep the project free of any billing requirement, the team switched to Leaflet + OpenStreetMap, which provides equivalent map-and-marker functionality with no API key or billing account needed.
 
 ---
 
@@ -88,7 +90,7 @@ FixFlow integrates the Google Maps Platform to provide a visual representation o
 - **Frontend:** Angular 22 (standalone components, Reactive Forms, Angular Router, HttpClient)
 - **Backend:** Node.js / Express.js
 - **Database:** MongoDB Atlas (cloud-hosted) / Mongoose
-- **Mapping:** Google Maps Platform — Maps JavaScript API *(planned for a later milestone)*
+- **Mapping:** Leaflet + OpenStreetMap
 - **Testing:** Vitest (`ng test`)
 - **Tooling:** Angular CLI, Prettier, Nodemon
 
@@ -297,4 +299,9 @@ Run these from the `frontend/` directory:
 - [x] Express/MongoDB backend and full CRUD UI for Work Assignment Management
 - [x] Consolidated navigation, database-backed selectors, and search across all three components
 - [x] Migrated from local MongoDB to MongoDB Atlas (cloud), with per-member database credentials and Project Data Access for all team members
-- [ ] Google Maps Platform integration *(planned for a later milestone)*
+
+**Milestone 3 — In Progress**
+
+- [x] Leaflet + OpenStreetMap third-party API integration (property map view, see note above)
+- [x] All individual components fully developed, integrated, and functional
+- [ ] Manual functional testing across all components
